@@ -4,9 +4,17 @@ import Navbar from "@/components/Navbar";
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className="bg-gray-50">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Serif+Display:ital@0;1&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="bg-[#F7F6F2] min-h-screen font-sans antialiased">
         <Navbar />
-        <main className="p-6">{children}</main>
+        <main className="max-w-7xl mx-auto px-6 py-10">{children}</main>
       </body>
     </html>
   );
