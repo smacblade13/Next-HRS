@@ -1,5 +1,5 @@
 "use client";
-
+import toast from "react-hot-toast";
 import { useEffect, useState } from "react";
 import {
   getCandidates,
@@ -66,7 +66,15 @@ export default function CandidateTable({ search, status, refresh }) {
 
   // ❌ DELETE
   const handleDelete = async (id) => {
-    await deleteCandidate(id);
+    const promise = deleteCandidate(id);
+
+    toast.promise(promise, {
+      loading: "Deleting...",
+      success: "Candidate deleted",
+      error: "Failed to delete",
+    });
+
+    await promise;
     fetchData();
   };
 
@@ -84,7 +92,7 @@ export default function CandidateTable({ search, status, refresh }) {
       position: editForm.position,
       status: editForm.status,
     });
-
+    toast.success("Candidate updated");
     setEditingId(null);
     fetchData();
   };
@@ -258,11 +266,10 @@ export default function CandidateTable({ search, status, refresh }) {
               key={i}
               type="button"
               onClick={() => setPage(i + 1)}
-              className={`min-w-[2.25rem] rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${
-                page === i + 1
-                  ? "bg-stone-900 text-white"
-                  : "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
-              }`}
+              className={`min-w-[2.25rem] rounded-lg px-3 py-1.5 text-sm font-medium transition-colors ${page === i + 1
+                ? "bg-stone-900 text-white"
+                : "border border-stone-200 bg-white text-stone-600 hover:bg-stone-50"
+                }`}
             >
               {i + 1}
             </button>

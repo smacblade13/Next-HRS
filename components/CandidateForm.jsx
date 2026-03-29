@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { addCandidate } from "@/services/candidateService";
+import toast from "react-hot-toast";
 
 const statusOptions = ["Applied", "Interview", "Hired", "Rejected"];
 
@@ -30,9 +31,11 @@ export default function CandidateForm({ onSuccess }) {
         const { error } = await addCandidate(form);
 
         if (!error) {
+            toast.success("Candidate added 🎉");
             setForm({ name: "", email: "", position: "", status: "Applied" });
             onSuccess();
         } else {
+            toast.error("Something went wrong");
             setError("Something went wrong. Please try again.");
         }
 
@@ -98,8 +101,8 @@ export default function CandidateForm({ onSuccess }) {
                                 type="button"
                                 onClick={() => setForm({ ...form, status: s })}
                                 className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-all duration-150 ${form.status === s
-                                        ? statusColors[s]
-                                        : "bg-transparent text-stone-400 border-stone-200 hover:border-stone-300"
+                                    ? statusColors[s]
+                                    : "bg-transparent text-stone-400 border-stone-200 hover:border-stone-300"
                                     }`}
                             >
                                 {s}

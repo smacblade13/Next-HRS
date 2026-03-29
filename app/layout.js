@@ -1,5 +1,14 @@
 import "../styles/globals.css";
 import Navbar from "@/components/Navbar";
+import { Toaster } from "react-hot-toast";
+
+export const metadata = {
+  title: "Recruitment Management System",
+  description: "Manage candidates, track hiring status, and streamline recruitment.",
+  icons: {
+    icon: "/favicon.ico",
+  },
+};
 
 export default function RootLayout({ children }) {
   return (
@@ -14,6 +23,7 @@ export default function RootLayout({ children }) {
       </head>
       <body className="bg-[#F7F6F2] min-h-screen font-sans antialiased">
         <Navbar />
+        <Toaster position="top-right" />
         <main className="max-w-7xl mx-auto px-6 py-10">{children}</main>
       </body>
     </html>
