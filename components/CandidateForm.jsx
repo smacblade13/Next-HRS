@@ -1,117 +1,67 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import {
-    getCandidates,
-    deleteCandidate,
-} from "@/services/candidateService";
+import { useState } from "react";
+import { addCandidate } from "@/services/candidateService";
 
-export default function CandidateTable({ search, status, refresh }) {
-    const [data, setData] = useState([]);
-    const [sort, setSort] = useState("newest");
-    const [page, setPage] = useState(1);
-
-    const LIMIT = 5;
-
-    useEffect(() => {
-        fetchData();
-    }, [refresh]);
-
-    const fetchData = async () => {
-        const { data } = await getCandidates();
-        setData(data || []);
-    };
-
-    // 🔍 FILTER + SEARCH
-    let filtered = data.filter((c) => {
-        const matchSearch =
-            c.name.toLowerCase().includes(search.toLowerCase()) ||
-            c.email.toLowerCase().includes(search.toLowerCase());
-
-        const matchStatus = status === "All" || c.status === status;
-
-        return matchSearch && matchStatus;
+export default function CandidateForm({ onSuccess }) {
+    const [form, setForm] = useState({
+        name: "",
+        email: "",
+        position: "",
+        status: "Applied",
     });
 
-    // 🔃 SORT
-    if (sort === "name") {
-        filtered.sort((a, b) => a.name.localeCompare(b.name));
-    } else {
-        filtered.sort(
-            (a, b) => new Date(b.created_at) - new Date(a.created_at)
-        );
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
 
-    // 📄 PAGINATION
-    const start = (page - 1) * LIMIT;
-    const paginated = filtered.slice(start, start + LIMIT);
-    const totalPages = Math.ceil(filtered.length / LIMIT);
+        const { error } = await addCandidate(form);
 
-    const handleDelete = async (id) => {
-        await deleteCandidate(id);
-        fetchData();
+        if (!error) {
+            setForm({ name: "", email: "", position: "", status: "Applied" });
+            onSuccess(); // refresh table
+        }
     };
 
     return (
-        <div>
-            {/* SORT */}
-            <div className="mb-2">
-                <select
-                    className="border p-2"
-                    value={sort}
-                    onChange={(e) => setSort(e.target.value)}
-                >
-                    <option value="newest">Newest</option>
-                    <option value="name">Name</option>
-                </select>
-            </div>
+        <form onSubmit={handleSubmit} className="flex gap-2 flex-wrap">
+            <input
+                required
+                placeholder="Name"
+                className="border p-2"
+                value={form.name}
+                onChange={(e) => setForm({ ...form, name: e.target.value })}
+            />
 
-            {/* TABLE */}
-            <table className="w-full border">
-                <thead>
-                    <tr className="bg-gray-100">
-                        <th>Name</th>
-                        <th>Email</th>
-                        <th>Position</th>
-                        <th>Status</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
+            <input
+                required
+                placeholder="Email"
+                className="border p-2"
+                value={form.email}
+                onChange={(e) => setForm({ ...form, email: e.target.value })}
+            />
 
-                <tbody>
-                    {paginated.map((c) => (
-                        <tr key={c.id} className="text-center border-t">
-                            <td>{c.name}</td>
-                            <td>{c.email}</td>
-                            <td>{c.position}</td>
-                            <td>{c.status}</td>
+            <input
+                required
+                placeholder="Position"
+                className="border p-2"
+                value={form.position}
+                onChange={(e) => setForm({ ...form, position: e.target.value })}
+            />
 
-                            <td className="space-x-2">
-                                <button
-                                    onClick={() => handleDelete(c.id)}
-                                    className="text-red-500"
-                                >
-                                    Delete
-                                </button>
-                            </td>
-                        </tr>
-                    ))}
-                </tbody>
-            </table>
+            <select
+                className="border p-2"
+                value={form.status}
+                onChange={(e) => setForm({ ...form, status: e.target.value })}
+            >
+                <option>Applied</option>
+                <option>Interview</option>
+                <option>Hired</option>
+                <option>Rejected</option>
+            </select>
 
-            {/* PAGINATION */}
-            <div className="flex gap-2 mt-4">
-                {Array.from({ length: totalPages }, (_, i) => (
-                    <button
-                        key={i}
-                        className={`px-3 py-1 border ${page === i + 1 ? "bg-blue-500 text-white" : ""
-                            }`}
-                        onClick={() => setPage(i + 1)}
-                    >
-                        {i + 1}
-                    </button>
-                ))}
-            </div>
-        </div>
+            <button className="bg-blue-500 text-white px-4">
+                Add
+            </button>
+        </form>
     );
 }

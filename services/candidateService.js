@@ -1,17 +1,42 @@
 import { supabase } from "@/lib/supabaseClient";
 
+// GET
 export const getCandidates = async () => {
-    return await supabase.from("candidates").select("*").order("created_at", { ascending: false });
+    const { data, error } = await supabase
+        .from("candidates")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+    if (error) console.error(error);
+    return { data, error };
 };
 
-export const addCandidate = async (data) => {
-    return await supabase.from("candidates").insert([data]);
+// CREATE
+export const addCandidate = async (candidate) => {
+    const { data, error } = await supabase
+        .from("candidates")
+        .insert([candidate]);
+
+    if (error) console.error(error);
+    return { data, error };
 };
 
+// DELETE
 export const deleteCandidate = async (id) => {
-    return await supabase.from("candidates").delete().eq("id", id);
+    const { error } = await supabase
+        .from("candidates")
+        .delete()
+        .eq("id", id);
+
+    if (error) console.error(error);
 };
 
-export const updateCandidate = async (id, data) => {
-    return await supabase.from("candidates").update(data).eq("id", id);
+// UPDATE
+export const updateCandidate = async (id, updates) => {
+    const { error } = await supabase
+        .from("candidates")
+        .update(updates)
+        .eq("id", id);
+
+    if (error) console.error(error);
 };
